@@ -8,19 +8,23 @@
 
 double t_max = 0;
 
+
 double fun(double p1, double p2, double p3, double t)
 {
 	return p1 * (1 - t) * (1 - t) + 2 * p2 * t * (1 - t) + p3 * t * t; //посчитанная формула
 }
 
+void DrawningFigure(double[]);
 void Render(double delta_time)
 {
 	t_max += delta_time / 5; //t_max становится = 1 за 5 секунд
 	if (t_max > 1) t_max = 0; //после обнуляется
 	double P1[] = { 0,0,0 }; //Наши точки
-	double P2[] = { -4,6,7 };
-	double P3[] = { 10,10,0 };
+	double P2[] = { 0,5,0 };
+	double P3[] = { 5,0,0 };
 	double P[3];
+	double pastP[3];
+
 	glBegin(GL_LINE_STRIP); //построим отрезки P1P2 и P2P3
 	glVertex3dv(P1);
 	glVertex3dv(P2);
@@ -37,13 +41,17 @@ void Render(double delta_time)
 		glVertex3dv(P); //Рисуем точку P
 	}
 	glEnd();
+
 	glColor3d(1, 0, 1);
 	glLineWidth(1); //возвращаем ширину линии = 1
 	//нарисуем все точки
 	glPointSize(10);
-	glBegin(GL_POINTS);
-	glVertex3dv(P);
-	glEnd();
+	//glBegin(GL_POINTS);
+	//glVertex3dv(P);
+	//glEnd();
+
+	DrawningFigure(P);
+
 	glColor3d(1, 0, 0);
 	glBegin(GL_POINTS);
 	glVertex3dv(P1);
@@ -53,3 +61,43 @@ void Render(double delta_time)
 
 }  
 
+void DrawningFigure(double P[])
+{
+	glBegin(GL_QUADS);
+	glColor3d(0.8, 0, 0);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0);
+
+	glColor3d(0, 0.8, 0);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0.1);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0.1);
+
+	glColor3d(0, 0, 0.8);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0.1);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0);
+	
+	glColor3d(0, 0.8, 0.8);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0);
+	glVertex3d(P[0] - 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0);
+
+	glColor3d(0.8, 0.8, 0);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0);
+	glVertex3d(P[0] + 0.1, P[1] + 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0.1);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0);
+
+	glColor3d(0.8, 0, 0.8);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0);
+	glVertex3d(P[0] + 0.1, P[1] - 0.1, 0.1);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0.1);
+	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0);
+	glEnd();
+};
