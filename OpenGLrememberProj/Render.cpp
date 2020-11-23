@@ -195,11 +195,57 @@ void Erm2()
 	glEnd();
 
 }
+void Bez3(double delta_time)
+{
+	t_max += delta_time / 1; //t_max становится = 1 за 5 секунд
+	if (t_max > 1) t_max = 0; //после обнуляется
 
+	double P1[] = { 0,0,0 }; //Наши точки
+	double P2[] = { 0,6,0 };
+	double P3[] = { 3,0,0 };
+	double P4[] = { 3,10,0 };
+	double P[4];
+	glBegin(GL_LINE_STRIP); //построим отрезки P1P2 и P2P3
+	glVertex3dv(P1);
+	glVertex3dv(P2);
+	glVertex3dv(P3);
+	glVertex3dv(P4);
+	glEnd();
+	glLineWidth(3); //ширина линии
+	glColor3d(0, 1, 0);
+	glBegin(GL_LINE_STRIP);
+	for (double t = 0; t <= t_max; t += 0.01)
+	{
+		P[0] = f(P1[0], P2[0], P3[0], P4[0], t);
+		P[1] = f(P1[1], P2[1], P3[1], P4[1], t);
+		P[2] = f(P1[2], P2[2], P3[2], P4[2], t);
+		P[3] = f(P1[3], P2[3], P3[3], P4[3], t);
+		glVertex3dv(P); //Рисуем точку P
+	}
+	glEnd();
+	glColor3d(1, 0, 1);
+	glLineWidth(1); //возвращаем ширину линии = 1
+	//нарисуем все точки
+	glPointSize(10);
+	glBegin(GL_POINTS);
+	glVertex3dv(P);
+	glEnd();
+
+	DrawningFigure(P);
+
+	glColor3d(1, 0, 0);
+	glBegin(GL_POINTS);
+	glVertex3dv(P1);
+	glVertex3dv(P2);
+	glVertex3dv(P3);
+	glVertex3dv(P4);
+	glEnd();
+}
 void Render(double delta_time)
 {
 	Bez1();
 	Bez2();
+	Bez3(delta_time);
 
 	Erm1();
 	Erm2();
