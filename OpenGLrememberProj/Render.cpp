@@ -197,7 +197,7 @@ void Erm2()
 }
 void Bez3(double delta_time)
 {
-	t_max += delta_time / 1; //t_max становится = 1 за 5 секунд
+	t_max += delta_time / 5; //t_max становится = 1 за 5 секунд
 	if (t_max > 1) t_max = 0; //после обнуляется
 
 	double P1[] = { 0,0,0 }; //Наши точки
