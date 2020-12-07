@@ -1,10 +1,14 @@
-
-
 #include "Render.h"
-
 #include <Windows.h>
 #include <GL\GL.h>
 #include <GL\GLU.h>
+#include <math.h>
+#include "Vec3.h"
+#include <iostream>
+#include <cmath>
+#include <stdlib.h>
+
+#define _USE_MATH_DEFINES
 
 double t_max = 0;
 
@@ -27,7 +31,7 @@ void Bez1()
 	double P2[] = { 2,2,4 };
 	double P3[] = { 8,1,13 };
 	double P4[] = { 4,0,0 };
-	double P[4];
+	double P[3];
 	glBegin(GL_LINE_STRIP); //построим отрезки P1P2 и P2P3
 	glVertex3dv(P1);
 	glVertex3dv(P2);
@@ -42,7 +46,6 @@ void Bez1()
 		P[0] = f(P1[0], P2[0], P3[0], P4[0], t);
 		P[1] = f(P1[1], P2[1], P3[1], P4[1], t);
 		P[2] = f(P1[2], P2[2], P3[2], P4[2], t);
-		P[3] = f(P1[3], P2[3], P3[3], P4[3], t);
 		glVertex3dv(P); //Рисуем точку P
 	}
 	glEnd();
@@ -65,9 +68,10 @@ void Bez2()
 {
 	double P1[] = { 0,0,0 }; //Наши точки
 	double P2[] = { 0,6,0 };
-	double P3[] = { 3,0,0 };
-	double P4[] = { 3,10,0 };
-	double P[4];
+	double P3[] = { 3,0,3 };
+	double P4[] = { 3,10,-3};
+	double P[3];
+
 	glBegin(GL_LINE_STRIP); //построим отрезки P1P2 и P2P3
 	glVertex3dv(P1);
 	glVertex3dv(P2);
@@ -82,7 +86,6 @@ void Bez2()
 		P[0] = f(P1[0], P2[0], P3[0], P4[0], t);
 		P[1] = f(P1[1], P2[1], P3[1], P4[1], t);
 		P[2] = f(P1[2], P2[2], P3[2], P4[2], t);
-		P[3] = f(P1[3], P2[3], P3[3], P4[3], t);
 		glVertex3dv(P); //Рисуем точку P
 	}
 	glEnd();
@@ -195,52 +198,124 @@ void Erm2()
 	glEnd();
 
 }
+
+double Angle_Vectors(double B[])
+{
+	double A[] = { 1,0 };
+
+	double length = sqrt(B[0] * B[0] + B[1] * B[1] + 0);
+
+	B[0] = B[0] / length;
+	B[1] = B[1] / length;
+	//скалярное произведение векторов
+	double scalar = A[0] * B[0] + A[1] * B[1];
+
+	//модуль векторов
+	double modul_A = sqrt(pow(A[0], 2) + pow(A[1], 2));
+	double modul_B = sqrt(pow(B[0], 2) + pow(B[1], 2));
+
+	//расчет косинуса угла между векторами
+	double cos_vec = scalar / (modul_A * modul_B);
+
+	return acos(fabs(cos_vec));
+}
+
+
+void DrawningFigure2()
+{
+	glBegin(GL_QUADS);
+	glColor3d(0.8, 0, 0);
+	glVertex3d(-0.1, 0.1, 0);
+	glVertex3d(0.1, 0.1, 0);
+	glVertex3d(0.1, -0.1, 0);
+	glVertex3d(-0.1, -0.1, 0);
+
+	glColor3d(0, 0.8, 0);
+	glVertex3d(-0.1, 0.1, 0.1);
+	glVertex3d(0.1, 0.1, 0.1);
+	glVertex3d(0.1, -0.1, 0.1);
+	glVertex3d(-0.1, -0.1, 0.1);
+
+	glColor3d(0, 0, 0.8);
+	glVertex3d(-0.1, 0.1, 0);
+	glVertex3d(-0.1, 0.1, 0.1);
+	glVertex3d(-0.1, -0.1, 0.1);
+	glVertex3d(-0.1, -0.1, 0);
+
+	glColor3d(0, 0.8, 0.8);
+	glVertex3d(-0.1, 0.1, 0);
+	glVertex3d(-0.1, 0.1, 0.1);
+	glVertex3d(0.1, 0.1, 0.1);
+	glVertex3d(0.1, 0.1, 0);
+
+	glColor3d(0.8, 0.8, 0);
+	glVertex3d(0.1, 0.1, 0);
+	glVertex3d(0.1, 0.1, 0.1);
+	glVertex3d(0.1, -0.1, 0.1);
+	glVertex3d(0.1, -0.1, 0);
+
+	glColor3d(0.8, 0, 0.8);
+	glVertex3d(0.1, -0.1, 0);
+	glVertex3d(0.1, -0.1, 0.1);
+	glVertex3d(-0.1, -0.1, 0.1);
+	glVertex3d(-0.1, -0.1, 0);
+	glEnd();
+};
+
+
+Vector3 Bezye(double* P1, double* P2, double P3[3], double P4[3], double t)
+{
+	double P[4];
+
+	P[0] = f(P1[0], P2[0], P3[0], P4[0], t);
+	P[1] = f(P1[1], P2[1], P3[1], P4[1], t);
+	P[2] = f(P1[2], P2[2], P3[2], P4[2], t);
+	P[3] = f(P1[3], P2[3], P3[3], P4[3], t);
+
+	Vector3 D;
+	D.setCoords(P[0], P[1], P[2]);
+	return D;
+}
+
 void Bez3(double delta_time)
 {
+
 	t_max += delta_time / 5; //t_max становится = 1 за 5 секунд
 	if (t_max > 1) t_max = 0; //после обнуляется
 
 	double P1[] = { 0,0,0 }; //Наши точки
 	double P2[] = { 0,6,0 };
-	double P3[] = { 3,0,0 };
-	double P4[] = { 3,10,0 };
-	double P[4];
-	glBegin(GL_LINE_STRIP); //построим отрезки P1P2 и P2P3
-	glVertex3dv(P1);
-	glVertex3dv(P2);
-	glVertex3dv(P3);
-	glVertex3dv(P4);
-	glEnd();
-	glLineWidth(3); //ширина линии
-	glColor3d(0, 1, 0);
-	glBegin(GL_LINE_STRIP);
-	for (double t = 0; t <= t_max; t += 0.01)
-	{
-		P[0] = f(P1[0], P2[0], P3[0], P4[0], t);
-		P[1] = f(P1[1], P2[1], P3[1], P4[1], t);
-		P[2] = f(P1[2], P2[2], P3[2], P4[2], t);
-		P[3] = f(P1[3], P2[3], P3[3], P4[3], t);
-		glVertex3dv(P); //Рисуем точку P
-	}
-	glEnd();
-	glColor3d(1, 0, 1);
-	glLineWidth(1); //возвращаем ширину линии = 1
-	//нарисуем все точки
-	glPointSize(10);
-	glBegin(GL_POINTS);
-	glVertex3dv(P);
-	glEnd();
+	double P3[] = { 3,0,3 };
+	double P4[] = { 3,10,-3 };
+	//double P[3];
 
-	DrawningFigure(P);
+	Bez2();
 
-	glColor3d(1, 0, 0);
-	glBegin(GL_POINTS);
-	glVertex3dv(P1);
-	glVertex3dv(P2);
-	glVertex3dv(P3);
-	glVertex3dv(P4);
-	glEnd();
+	Vector3 P_old = Bezye(P1, P2, P3, P4, t_max - delta_time);
+	Vector3 P = Bezye(P1, P2, P3, P4, t_max);
+	Vector3 VecP_P_old = (P - P_old).normolize();
+
+	Vector3 rotateX(VecP_P_old.X(), VecP_P_old.Y(), 0);
+	rotateX = rotateX.normolize();
+
+	Vector3 VecPrX = Vector3(1, 0, 0).vectProisvedenie(rotateX);
+	double CosX = Vector3(1, 0, 0).ScalarProizv(rotateX);
+	double SinAngleZ = VecPrX.Z() / abs(VecPrX.Z());
+	double AngleOZ = acos(CosX) * 180 / PI * SinAngleZ;
+
+	double AngleOY = acos(VecP_P_old.Z()) * 180 / PI - 90;
+
+	double A[] = { -0.5,-0.5,-0.5 };
+	glPushMatrix();
+	glTranslated(P.X(), P.Y(), P.Z());
+	glRotated(AngleOZ, 0, 0, 1);
+	glRotated(AngleOY, 0, 1, 0);
+	DrawningFigure2();
+	glPopMatrix();
 }
+
+
+
 void Render(double delta_time)
 {
 	Bez1();
@@ -291,3 +366,4 @@ void DrawningFigure(double P[])
 	glVertex3d(P[0] - 0.1, P[1] - 0.1, 0);
 	glEnd();
 };
+
